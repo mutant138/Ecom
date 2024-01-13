@@ -3,15 +3,23 @@ const mongoDb = require('mongodb')
 const getDb = require('../util/database').getDb;
 
 class Product {
-  constructor(title,imageUrl,price,description){
+  constructor(title,imageUrl,price,description, id){
    this.title = title;
    this.imageUrl = imageUrl;
    this.price = price;
    this.description = description;
+   this._id =id? new mongoDb.ObjectId(id): null;
   }
   save(){
-  const db = getDb();
-  return db.collection('products').insertOne(this)
+    const db = getDb();
+    let dbOp;
+    if(this._id){
+      //update the prod
+      dbOp = db.collection('products').updateOne({_id: new mongoDb.ObjectId(this._id)},{$set: this})
+    }else{
+      dbOp = db.collection('products').insertOne(this)
+    }
+  return dbOp
   .then(result =>{
     console.log(result)
   }).catch(err =>{
@@ -37,6 +45,16 @@ class Product {
       return product
     })
     .catch(err =>{
+      console.log(err)
+    })
+  }
+  static deleteById(prodId){
+    const db = getDb()
+    db.collection('products').deleteOne({_id: new mongoDb.ObjectId(prodId)})
+    .then(result =>{
+      console.log('Deleted')
+    })
+    .catch(err=>{
       console.log(err)
     })
   }
