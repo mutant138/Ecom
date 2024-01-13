@@ -1,10 +1,12 @@
 const mongodb = require('mongodb')
 const mongoClient = mongodb.MongoClient;
 
+require('dotenv').config()
+
 let _db;
 const mongoConnect = async (req,res)=>{
   try {
-    const client =await mongoClient.connect('mongodb+srv://udhayasurya138:MHE9hGu78Chhv0pb@cluster0.morce5g.mongodb.net/')
+    const client =await mongoClient.connect(`mongodb+srv://${process.env.mongoDb_name}:${process.env.mongoDb_pass}@cluster0.morce5g.mongodb.net/`)
     console.log('Connnection Established mongDB')
     _db = client.db('test')
     return client
